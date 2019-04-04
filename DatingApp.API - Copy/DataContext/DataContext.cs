@@ -10,15 +10,27 @@ namespace DatingApp.API.Models
         {
         }
 
-        public DataContext(DbContextOptions<DataContext> options) : base(options) {}
+        public DataContext(DbContextOptions<DataContext> options)
+            : base(options)
+        {
+        }
 
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<Value> Value { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=TOP-QUARK\\SQLEXPRESS2017;Database=MvcNgCourse;Trusted_Connection=True;");
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
-            
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Fname)
@@ -40,7 +52,6 @@ namespace DatingApp.API.Models
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasMaxLength(30);
-
             });
 
             modelBuilder.Entity<Value>(entity =>
